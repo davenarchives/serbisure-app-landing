@@ -15,7 +15,8 @@ import { createQrMatrix } from './qrCode';
 import { PageRoute, PrivacyPolicyDoc, SupportDoc, TermsOfUseDoc } from './LegalPages';
 import './LandingPage.css';
 
-const APK_DOWNLOAD_URL = 'https://github.com/davenarchives/SerbiSure/releases/download/v2.1/SerbiSure-v2.1.0.apk';
+const APK_DOWNLOAD_URL = 'https://github.com/SerbiSure-Tagupa-et-al/SerbiSure-Frontend/releases/download/v2.1.5/SerbiSure-v2.1.5.apk';
+const APK_FILENAME = 'SerbiSure-v2.1.5.apk';
 
 function resolveRoute(pathname: string): PageRoute {
   const clean = pathname.replace(/\/+$/, '').toLowerCase();
@@ -308,7 +309,7 @@ export const LandingPage: React.FC = () => {
             <a
               className="download-button download-button--dark header-download-btn"
               href={APK_DOWNLOAD_URL}
-              download="SerbiSure-v2.1.0.apk"
+              download={APK_FILENAME}
             >
               <Download size={17} /> Download APK
             </a>
@@ -327,7 +328,7 @@ export const LandingPage: React.FC = () => {
                 <a
                   className="download-button download-button--dark"
                   href={APK_DOWNLOAD_URL}
-                  download="SerbiSure-v2.1.0.apk"
+                  download={APK_FILENAME}
                 >
                   <Download size={17} /> Download APK
                 </a>
@@ -416,7 +417,7 @@ export const LandingPage: React.FC = () => {
                   <a
                     className="download-button download-button--light"
                     href={APK_DOWNLOAD_URL}
-                    download="SerbiSure-v2.1.0.apk"
+                    download={APK_FILENAME}
                   >
                     <Download size={17} /> Download APK
                   </a>
@@ -523,7 +524,7 @@ export const LandingPage: React.FC = () => {
               <a
                 className="download-button download-button--dark qr-modal__cta"
                 href={APK_DOWNLOAD_URL}
-                download="SerbiSure-v2.1.0.apk"
+                download={APK_FILENAME}
                 onClick={() => setIsQrModalOpen(false)}
               >
                 <Download size={17} /> Download APK Directly

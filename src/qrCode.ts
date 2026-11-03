@@ -55,7 +55,7 @@ function formatBits(ecIndicator: number, mask: number): number {
 }
 
 export function createQrMatrix(text: string): boolean[][] {
-  const bytes = Array.from(new TextEncoder().encode(text)).slice(0, 104);
+  const bytes = Array.from(new TextEncoder().encode(text)).slice(0, 106);
   let vIdx = 0;
   while (vIdx < 4 && bytes.length + 2 > V_PARAMS[vIdx][1] - V_PARAMS[vIdx][2]) {
     vIdx++;
