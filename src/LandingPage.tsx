@@ -4,6 +4,7 @@ import {
   BriefcaseBusiness,
   Download,
   MapPin,
+  Menu,
   Minus,
   Pencil,
   Phone,
@@ -12,11 +13,12 @@ import {
   X,
 } from 'lucide-react';
 import { createQrMatrix } from './qrCode';
+import { PromoVideo } from './PromoVideo';
 import { PageRoute, PrivacyPolicyDoc, SupportDoc, TermsOfUseDoc } from './LegalPages';
 import './LandingPage.css';
 
-const APK_DOWNLOAD_URL = 'https://github.com/SerbiSure-Tagupa-et-al/SerbiSure-Frontend/releases/download/v2.1.5/SerbiSure-v2.1.5.apk';
-const APK_FILENAME = 'SerbiSure-v2.1.5.apk';
+const APK_DOWNLOAD_URL = 'https://github.com/SerbiSure-Tagupa-et-al/SerbiSure-Frontend/releases/download/v2.1.6/SerbiSure-v2.1.6.apk';
+const APK_FILENAME = 'SerbiSure-v2.1.6.apk';
 
 function resolveRoute(pathname: string): PageRoute {
   const clean = pathname.replace(/\/+$/, '').toLowerCase();
@@ -106,7 +108,7 @@ const FaqShowcase = () => (
 
         <div className="faq-ticket" aria-hidden="true">
           <div className="faq-ticket__header">
-            <img className="faq-ticket__avatar" src="/ui-assets/avatar-shennie.png" alt="" />
+            <img className="faq-ticket__avatar" src="/ui-assets/avatar-shennie.png" alt="" loading="lazy" decoding="async" />
             <div className="faq-ticket__person">
               <strong>Shennie Mae Cabanes</strong>
               <span>Kasambahay · Short-term</span>
@@ -153,7 +155,7 @@ const FaqShowcase = () => (
         </div>
 
         <div className="faq-profile" aria-hidden="true">
-          <img className="faq-profile__avatar" src="/ui-assets/avatar-ryan.png" alt="" />
+          <img className="faq-profile__avatar" src="/ui-assets/avatar-ryan.png" alt="" loading="lazy" decoding="async" />
           <div className="faq-profile__top-pills">
             <span className="faq-profile__role">Kasambahay</span>
             <span className="faq-profile__cv">View CV</span>
@@ -249,12 +251,17 @@ export const LandingPage: React.FC = () => {
     typeof window !== 'undefined' ? resolveRoute(window.location.pathname) : 'home'
   );
   const [openFaq, setOpenFaq] = useState(1);
+  const [activeFeature, setActiveFeature] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(
     () => typeof window !== 'undefined' && window.location.hash === '#qr'
   );
   const closeQrBtnRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuCloseRef = useRef<HTMLButtonElement>(null);
+  const featureTrackRef = useRef<HTMLDivElement>(null);
 
   const navigateTo = (next: PageRoute) => {
+    setIsMobileMenuOpen(false);
     const targetPath = next === 'home' ? '/' : `/${next}`;
     if (typeof window !== 'undefined' && window.location.pathname !== targetPath) {
       window.history.pushState({}, '', targetPath);
@@ -262,6 +269,24 @@ export const LandingPage: React.FC = () => {
     setRoute(next);
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    }
+  };
+
+  const navigateToSection = (sectionId: string) => {
+    setIsMobileMenuOpen(false);
+    const scrollTarget = () => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      }
+    };
+    if (route !== 'home') {
+      if (typeof window !== 'undefined') window.history.pushState({}, '', '/');
+      setRoute('home');
+      requestAnimationFrame(() => requestAnimationFrame(scrollTarget));
+    } else {
+      scrollTarget();
     }
   };
 
@@ -281,6 +306,47 @@ export const LandingPage: React.FC = () => {
       terms: 'Terms of Use — SerbiSure',
     };
     document.title = titles[route];
+  }, [route]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    mobileMenuCloseRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (route !== 'home') return;
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.reveal-on-scroll'));
+    if (!nodes.length) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      nodes.forEach((n) => {
+        n.dataset.revealed = 'true';
+      });
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).dataset.revealed = 'true';
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -32px 0px' }
+    );
+    nodes.forEach((n) => observer.observe(n));
+    return () => observer.disconnect();
   }, [route]);
 
   useEffect(() => {
@@ -305,15 +371,27 @@ export const LandingPage: React.FC = () => {
       <header className="site-header">
         <div className="page-shell header-inner">
           <Brand onNavigate={navigateTo} />
-          {route !== 'home' && (
-            <a
-              className="download-button download-button--dark header-download-btn"
-              href={APK_DOWNLOAD_URL}
-              download={APK_FILENAME}
+          <div className="header-actions">
+            {route !== 'home' && (
+              <a
+                className="download-button download-button--dark header-download-btn"
+                href={APK_DOWNLOAD_URL}
+                download={APK_FILENAME}
+              >
+                <Download size={17} /> Download APK
+              </a>
+            )}
+            <button
+              type="button"
+              className="mobile-menu-trigger"
+              aria-label="Open navigation menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-nav-drawer"
+              onClick={() => setIsMobileMenuOpen(true)}
             >
-              <Download size={17} /> Download APK
-            </a>
-          )}
+              <Menu size={22} strokeWidth={2} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -339,8 +417,8 @@ export const LandingPage: React.FC = () => {
             </div>
             <div className="hero-art" aria-label="SerbiSure home feed preview">
               <div className="hero-phone-wrap">
-                <img className="orbit-asset" src="/ui-assets/orbit.svg" alt="" aria-hidden="true" />
-                <img className="hero-phone" src={screens.feed} alt="SerbiSure home feed displayed on a phone" />
+                <img className="orbit-asset" src="/ui-assets/orbit.svg" alt="" aria-hidden="true" decoding="async" />
+                <img className="hero-phone" src={screens.feed} alt="SerbiSure home feed displayed on a phone" decoding="async" fetchPriority="high" />
                 <span className="hero-chip hero-chip--price">Php 6500 / month</span>
                 <span className="hero-chip hero-chip--term"><BriefcaseBusiness aria-hidden="true" /> Short-term</span>
               </div>
@@ -348,26 +426,48 @@ export const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="features" aria-labelledby="features-title">
+        <PromoVideo />
+
+        <section className="features reveal-on-scroll" id="features" aria-labelledby="features-title">
           <div className="page-shell feature-stage">
             <h2 id="features-title">Simple, Secure &amp;<br />Organized Hiring</h2>
-            <div className="feature-cards">
+            <div
+              className="feature-cards"
+              ref={featureTrackRef}
+              onScroll={() => {
+                const track = featureTrackRef.current;
+                if (!track) return;
+                const firstCard = track.firstElementChild as HTMLElement | null;
+                if (!firstCard) return;
+                const step = firstCard.offsetWidth + 14;
+                const idx = Math.max(0, Math.min(features.length - 1, Math.round(track.scrollLeft / step)));
+                if (idx !== activeFeature) setActiveFeature(idx);
+              }}
+            >
               {features.map((feature) => (
                 <article className={`feature-card ${feature.className}`} key={feature.key}>
                   <div className="feature-card__copy"><h3>{feature.title}</h3></div>
-                  <img src={feature.image} alt="" />
+                  <img src={feature.image} alt="" loading="lazy" decoding="async" />
                 </article>
+              ))}
+            </div>
+            <div className="feature-dots" aria-hidden="true">
+              {features.map((feature, idx) => (
+                <span
+                  key={feature.key}
+                  className={`feature-dot ${idx === activeFeature ? 'feature-dot--active' : ''}`}
+                />
               ))}
             </div>
           </div>
         </section>
 
-        <section className="steps" id="how-it-works">
+        <section className="steps reveal-on-scroll" id="how-it-works">
           <div className="page-shell steps-layout">
               <div className="steps-art" aria-label="SerbiSure role selection screen preview">
                 <div className="steps-phone-wrap">
-                  <img className="orbit-asset orbit-asset--steps" src="/ui-assets/orbit.svg" alt="" aria-hidden="true" />
-                  <img className="steps-phone" src={screens.role} alt="SerbiSure role selection screen displayed on a phone" />
+                  <img className="orbit-asset orbit-asset--steps" src="/ui-assets/orbit.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                  <img className="steps-phone" src={screens.role} alt="SerbiSure role selection screen displayed on a phone" loading="lazy" decoding="async" />
                 </div>
               </div>
               <div className="steps-copy">
@@ -381,7 +481,7 @@ export const LandingPage: React.FC = () => {
             </div>
         </section>
 
-        <section className="faq-section" id="faqs">
+        <section className="faq-section reveal-on-scroll" id="faqs">
           <div className="page-shell faq-layout">
             <div className="faq-copy">
               <h2>Have Questions About<br />SerbiSure?</h2>
@@ -404,11 +504,11 @@ export const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="download-section" id="download">
+        <section className="download-section reveal-on-scroll" id="download">
           <div className="page-shell download-panel">
               <div className="download-art" aria-label="SerbiSure welcome and discovery screens">
-                <img className="download-phone download-phone--role" src={screens.welcome} alt="SerbiSure welcome screen" />
-                <img className="download-phone download-phone--explore" src={screens.angledExplore} alt="Find kasambahay with SerbiSure" />
+                <img className="download-phone download-phone--role" src={screens.welcome} alt="SerbiSure welcome screen" loading="lazy" decoding="async" />
+                <img className="download-phone download-phone--explore" src={screens.angledExplore} alt="Find kasambahay with SerbiSure" loading="lazy" decoding="async" />
               </div>
               <div className="download-copy">
                 <h2>Find Help or Find Work<br />with SerbiSure</h2>
@@ -489,6 +589,93 @@ export const LandingPage: React.FC = () => {
           <small>©2026 SerbiSure. All rights reserved</small>
         </div>
       </footer>
+
+      {isMobileMenuOpen && (
+        <div
+          className="mobile-nav-backdrop"
+          role="presentation"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsMobileMenuOpen(false);
+          }}
+        >
+          <nav
+            id="mobile-nav-drawer"
+            className="mobile-nav-drawer"
+            aria-label="Mobile navigation"
+          >
+            <div className="mobile-nav__top">
+              <Brand onNavigate={navigateTo} />
+              <button
+                ref={mobileMenuCloseRef}
+                type="button"
+                className="mobile-nav__close"
+                aria-label="Close navigation menu"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="mobile-nav__links">
+              <button type="button" onClick={() => navigateToSection('features')}>Features</button>
+              <button type="button" onClick={() => navigateToSection('how-it-works')}>How It Works</button>
+              <button type="button" onClick={() => navigateToSection('faqs')}>FAQs</button>
+              <div className="mobile-nav__divider" aria-hidden="true" />
+              <a
+                href="/support"
+                aria-current={route === 'support' ? 'page' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('support');
+                }}
+              >
+                Support
+              </a>
+              <a
+                href="/privacy"
+                aria-current={route === 'privacy' ? 'page' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('privacy');
+                }}
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="/terms"
+                aria-current={route === 'terms' ? 'page' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('terms');
+                }}
+              >
+                Terms of Use
+              </a>
+            </div>
+
+            <div className="mobile-nav__actions">
+              <a
+                className="download-button download-button--dark"
+                href={APK_DOWNLOAD_URL}
+                download={APK_FILENAME}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Download size={17} /> Download APK
+              </a>
+              <button
+                className="download-button download-button--qr"
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsQrModalOpen(true);
+                }}
+              >
+                <QrCode size={17} /> Scan with QR
+              </button>
+            </div>
+          </nav>
+        </div>
+      )}
 
       {isQrModalOpen && (
         <div
