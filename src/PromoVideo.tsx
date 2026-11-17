@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Maximize, Maximize2, Pause, Play, Volume2, VolumeX, X } from 'lucide-react';
 
-const VIDEO_SRC = '/serbisure-showreel-narrated.mp4#t=0.001';
+const VIDEO_SRC = '/serbisure-appdemo.mp4#t=0.001';
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

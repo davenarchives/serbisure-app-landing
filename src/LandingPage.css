@@ -23,6 +23,7 @@
 .site-header { padding-top: 22px; }
 .site-header .header-inner { width: min(1368px, calc(100% - 80px)); min-height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
+.header-manual-btn { min-width: 0; min-height: 40px; padding: 0 14px; border-radius: 9px; font-size: 13.5px; }
 .mobile-menu-trigger { display: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); align-items: center; justify-content: center; cursor: pointer; transition: background-color .16s ease; }
 .mobile-menu-trigger:hover { background: rgba(13, 13, 17, 0.06); }
 .mobile-menu-trigger:focus-visible { outline: 2px solid #ffad76; outline-offset: 2px; }
@@ -64,6 +65,10 @@
 .download-button--light { color: var(--ink); background: white; min-height: 46px; }
 .download-button--qr-dark { color: white; background: #242429; border: 1px solid rgba(255, 255, 255, 0.16); min-height: 46px; }
 .download-button--qr-dark:hover { background: #2f2f36; }
+.download-button--manual { color: var(--ink); background: transparent; border: 1.5px solid rgba(13, 13, 17, 0.16); min-height: 48px; }
+.download-button--manual:hover { background: rgba(13, 13, 17, 0.05); border-color: rgba(13, 13, 17, 0.28); }
+.download-button--manual-dark { color: white; background: transparent; border: 1px solid rgba(255, 255, 255, 0.22); min-height: 46px; }
+.download-button--manual-dark:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.36); }
 .hero-art { position: relative; z-index: 1; flex: 0 0 auto; margin-right: 7.8%; display: flex; justify-content: center; isolation: isolate; }
 .hero-phone-wrap { position: relative; width: clamp(230px, 19.8vw, 282px); aspect-ratio: 380 / 762; }
 .hero-phone-wrap > .hero-phone { position: absolute; left: 50%; top: 50%; z-index: 2; width: calc(100% * 810 / 380); max-width: none; height: auto; transform: translate(-50%, -50%); pointer-events: none; }
@@ -391,6 +396,8 @@
   .brand { font-size: 18px; gap: 8px; }
   .brand img { width: 30px; height: 30px; margin-left: -2px; }
   .header-download-btn { min-height: 38px; min-width: 122px; padding: 0 12px; font-size: 12.5px; }
+  .header-manual-btn { min-height: 38px; padding: 0 11px; font-size: 12.4px; gap: 6px; }
+  .header-manual-btn svg { width: 15px; height: 15px; }
   .legal-main { padding: 32px 0 64px; }
   .legal-doc { width: calc(100% - 32px); font-size: 14px; }
   .legal-doc h2 { margin-top: 26px; font-size: 16px; }

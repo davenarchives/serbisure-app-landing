@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BadgeCheck,
+  BookOpen,
   BriefcaseBusiness,
   Download,
   MapPin,
@@ -17,8 +18,9 @@ import { PromoVideo } from './PromoVideo';
 import { PageRoute, PrivacyPolicyDoc, SupportDoc, TermsOfUseDoc } from './LegalPages';
 import './LandingPage.css';
 
-const APK_DOWNLOAD_URL = 'https://github.com/SerbiSure-Tagupa-et-al/SerbiSure-Frontend/releases/download/v2.1.6/SerbiSure-v2.1.6.apk';
-const APK_FILENAME = 'SerbiSure-v2.1.6.apk';
+const APK_DOWNLOAD_URL = 'https://github.com/SerbiSure-Tagupa-et-al/SerbiSure-Frontend/releases/download/v2.1.7/SerbiSure-v2.1.7.apk';
+const APK_FILENAME = 'SerbiSure-v2.1.7.apk';
+const USER_MANUAL_URL = 'https://serbi-sure-user-manual.vercel.app';
 
 function resolveRoute(pathname: string): PageRoute {
   const clean = pathname.replace(/\/+$/, '').toLowerCase();
@@ -372,6 +374,14 @@ export const LandingPage: React.FC = () => {
         <div className="page-shell header-inner">
           <Brand onNavigate={navigateTo} />
           <div className="header-actions">
+            <a
+              className="download-button download-button--manual header-manual-btn"
+              href={USER_MANUAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BookOpen size={17} /> User Manual
+            </a>
             {route !== 'home' && (
               <a
                 className="download-button download-button--dark header-download-btn"
@@ -585,6 +595,9 @@ export const LandingPage: React.FC = () => {
             >
               Terms
             </a>
+            <a href={USER_MANUAL_URL} target="_blank" rel="noopener noreferrer">
+              User Manual
+            </a>
           </nav>
           <small>©2026 SerbiSure. All rights reserved</small>
         </div>
@@ -672,6 +685,15 @@ export const LandingPage: React.FC = () => {
               >
                 <QrCode size={17} /> Scan with QR
               </button>
+              <a
+                className="download-button download-button--manual"
+                href={USER_MANUAL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <BookOpen size={17} /> User Manual
+              </a>
             </div>
           </nav>
         </div>
